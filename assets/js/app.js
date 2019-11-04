@@ -203,9 +203,11 @@ const KEYS = [
   ],
 ];
 
+const defAlphabet = 'abcdefghijklmnopqrstuvwxyz';
+const altAlphabet = 'абвгдеёжзийклмнопрстуфхцчшщъыьэюя';
 let caps = false;
 let shift = false;
-let alt = false;
+let lang = true;
 
 const btnCreate = ({
   code, defVal, shiftVal, altVal, altShiftVal,
@@ -213,14 +215,28 @@ const btnCreate = ({
   const btn = document.createElement('div');
   btn.classList.add('btn');
   btn.code = code;
-  if (shift) {
-    btn.innerHTML = defVal.toUpperCase();
+  if (lang) {
+    btn.innerHTML = altVal;
+    if (shift) {
+      btn.innerHTML = altShiftVal;
+    } else if (caps) {
+      if (altAlphabet.includes(altVal)) btn.innerHTML = altShiftVal;
+      else btn.innerHTML = altVal;
+    }
+  } else if (!lang) {
+    if (shift) {
+      btn.innerHTML = shiftVal;
+    } else if (caps) {
+      if (defAlphabet.includes(defVal)) btn.innerHTML = shiftVal;
+      else btn.innerHTML = defVal;
+    } else btn.innerHTML = defVal;
   }
-  btn.innerHTML = defVal;
+
   if (code === 'Space') {
     btn.style.flexGrow = '20';
   }
-  btn.addEventListener('click', handlerAdd(code));
+  // eslint-disable-next-line no-use-before-define
+  handlerAdd(btn);
   return btn;
 };
 
@@ -234,6 +250,7 @@ const keyboardRow = (arr) => {
 const keyboardEl = () => {
   const keyboard = document.createElement('div');
   keyboard.classList.add('keyboard');
+  keyboard.id = 'keyboard';
   KEYS.map((el) => keyboard.append(keyboardRow(el)));
   return keyboard;
 };
@@ -254,11 +271,17 @@ const wrapperEl = () => {
   wrapper.append(outputArea(), keyboardEl());
   return wrapper;
 };
+
 const app = () => {
   document.querySelector('#page').prepend(wrapperEl());
 };
 
-function btnClickHandler() {
+const switchKeyboard = () => {
+  document.querySelector('#keyboard').remove();
+  document.querySelector('.wrapper').append(keyboardEl());
+};
+
+function btnClickHandler(event) {
   const area = document.querySelector('#textarea');
   area.value += event.target.innerHTML;
 }
@@ -286,49 +309,72 @@ function tabHandler() {
 
 function capsHandler() {
   caps = !caps;
-  if (caps) this.classList.add('active');
-  else this.classList.remove('active');
+  if (caps) {
+    switchKeyboard();
+  } else {
+    switchKeyboard();
+  }
 }
 
-function shiftHandler() {
-  shift = !shift;
-  document.querySelector('.keyboard').replaceWith(document.querySelector('.keyboard'), keyboardEl());
+function shiftHandler(event) {
+  if (event.type === 'mousedown') { shift = true; } else if (event.type === 'mouseup') { shift = false; }
+  switchKeyboard();
 }
 
-function altHandler() {
-  alt = !alt;
+function altHandler(event) {
+  if (event.type === 'mousedown') {
+    if (shift) lang = !lang;
+    switchKeyboard();
+  }
 }
 
 function nothingHandler() {}
 
-function handlerAdd(code) {
-  switch (code) {
+function handlerAdd(btn) {
+  switch (btn.code) {
     case 'Delete':
-      return deleteHandler;
+      btn.addEventListener('click', deleteHandler);
+      break;
     case 'Backspace':
-      return backspaceHandler;
+      btn.addEventListener('click', backspaceHandler);
+      break;
     case 'Enter':
-      return enterHandler;
+      btn.addEventListener('click', enterHandler);
+      break;
     case 'Tab':
-      return tabHandler;
+      btn.addEventListener('click', tabHandler);
+      break;
     case 'CapsLock':
-      return capsHandler;
+      btn.addEventListener('click', capsHandler);
+      break;
     case 'ShiftLeft':
-      return shiftHandler;
+      btn.addEventListener('mousedown', shiftHandler);
+      btn.addEventListener('mouseup', shiftHandler);
+      break;
     case 'ShiftRight':
-      return shiftHandler;
+      btn.addEventListener('mousedown', shiftHandler);
+      btn.addEventListener('mouseup', shiftHandler);
+      break;
     case 'AltLeft':
-      return altHandler;
+      btn.addEventListener('mousedown', altHandler);
+      btn.addEventListener('mouseup', altHandler);
+      break;
     case 'AltRight':
-      return altHandler;
+      btn.addEventListener('mousedown', altHandler);
+      btn.addEventListener('mouseup', altHandler);
+      break;
     case 'ControlLeft':
-      return nothingHandler;
+      btn.addEventListener('click', nothingHandler);
+      break;
     case 'ControlRight':
-      return nothingHandler;
+      btn.addEventListener('click', nothingHandler);
+      break;
     case 'MetaLeft':
-      return nothingHandler;
+      btn.addEventListener('click', nothingHandler);
+      break;
     default:
-      return btnClickHandler;
+      btn.addEventListener('click', btnClickHandler);
+      break;
   }
 }
 
