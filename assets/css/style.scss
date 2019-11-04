@@ -29,6 +29,7 @@
         color: rgb(148, 11, 211);
         box-shadow: $shadow;
         transition: all .3s ease;
+        font-size: 1.5em;
         &:hover{
             cursor: pointer;
             box-shadow: $shadow-hover;
