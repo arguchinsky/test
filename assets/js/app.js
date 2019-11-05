@@ -1,7 +1,7 @@
 const KEYS = [
   [
     {
-      code: 'Backqoute', defVal: '`', shiftVal: '~', altVal: 'ё', altShiftVal: 'Ё',
+      code: 'Backquote', defVal: '`', shiftVal: '~', altVal: 'ё', altShiftVal: 'Ё',
     },
     {
       code: 'Digit1', defVal: '1', shiftVal: '!', altVal: '1', altShiftVal: '!',
@@ -203,11 +203,21 @@ const KEYS = [
   ],
 ];
 
+const CODES = [
+  'Backquote', 'Digit1', 'Digit2', 'Digit3', 'Digit4', 'Digit5', 'Digit6', 'Digit7', 'Digit8', 'Digit9', 'Digit0', 'Minus', 'Equal', 'Backspace',
+  'Tab', 'KeyQ', 'KeyW', 'KeyE', 'KeyR', 'KeyT', 'KeyY', 'KeyU', 'KeyI', 'KeyO', 'KeyP', 'BracketLeft', 'BracketRight', 'Delete',
+  'CapsLock', 'KeyA', 'KeyS', 'KeyD', 'KeyF', 'KeyG', 'KeyH', 'KeyJ', 'KeyK', 'KeyL', 'Semicolon', 'Quote', 'Enter',
+  'ShiftLeft', 'KeyZ', 'KeyX', 'KeyC', 'KeyV', 'KeyB', 'KeyN', 'KeyM', 'Comma', 'Period', 'ShiftRight', 'ArrowUp',
+  'ControlLeft', 'MetaLeft', 'AltLeft', 'Space', 'AltRight', 'ControlRight', 'ArrowLeft', 'ArrowDown', 'ArrowRight',
+];
+
+const mousePressStatesArray = ['ShiftLeft', 'ShiftRight', 'AltLeft', 'AltRight'];
 const defAlphabet = 'abcdefghijklmnopqrstuvwxyz';
 const altAlphabet = 'абвгдеёжзийклмнопрстуфхцчшщъыьэюя';
 let caps = false;
 let shift = false;
-let lang = true;
+let alt = false;
+let lang = JSON.parse(localStorage.getItem('lang')) || false;
 
 const btnCreate = ({
   code, defVal, shiftVal, altVal, altShiftVal,
@@ -215,21 +225,30 @@ const btnCreate = ({
   const btn = document.createElement('div');
   btn.classList.add('btn');
   btn.code = code;
+  btn.id = code;
   if (lang) {
     btn.innerHTML = altVal;
     if (shift) {
       btn.innerHTML = altShiftVal;
-    } else if (caps) {
+    } else
+    if (caps) {
       if (altAlphabet.includes(altVal)) btn.innerHTML = altShiftVal;
-      else btn.innerHTML = altVal;
+      else {
+        btn.innerHTML = altVal;
+      }
     }
-  } else if (!lang) {
+  } else
+  if (!lang) {
     if (shift) {
       btn.innerHTML = shiftVal;
     } else if (caps) {
       if (defAlphabet.includes(defVal)) btn.innerHTML = shiftVal;
-      else btn.innerHTML = defVal;
-    } else btn.innerHTML = defVal;
+      else {
+        btn.innerHTML = defVal;
+      }
+    } else {
+      btn.innerHTML = defVal;
+    }
   }
 
   if (code === 'Space') {
@@ -276,7 +295,9 @@ const app = () => {
   document.querySelector('#page').prepend(wrapperEl());
 };
 
-const switchKeyboard = () => {
+const saveLang = () => localStorage.setItem('lang', lang);
+
+const reRenderKeyboard = () => {
   document.querySelector('#keyboard').remove();
   document.querySelector('.wrapper').append(keyboardEl());
 };
@@ -310,22 +331,40 @@ function tabHandler() {
 function capsHandler() {
   caps = !caps;
   if (caps) {
-    switchKeyboard();
+    reRenderKeyboard();
+    this.classList.add('active');
   } else {
-    switchKeyboard();
+    reRenderKeyboard();
   }
 }
 
-function shiftHandler(event) {
-  if (event.type === 'mousedown') { shift = true; } else if (event.type === 'mouseup') { shift = false; }
-  switchKeyboard();
+function shiftHandler({ type }) {
+  if (type === 'mousedown') {
+    shift = true;
+  } else if (type === 'mouseup') {
+    shift = false;
+  }
+  if (type === 'keydown') {
+    shift = true;
+    if (alt) {
+      lang = !lang;
+      saveLang();
+    }
+  } else if (type === 'keyup') {
+    shift = false;
+  }
+  reRenderKeyboard();
 }
 
-function altHandler(event) {
-  if (event.type === 'mousedown') {
-    if (shift) lang = !lang;
-    switchKeyboard();
-  }
+function altHandler({ type }) {
+  if (type === 'keydown') {
+    alt = true;
+    if (shift) {
+      lang = !lang;
+      saveLang();
+      this.classList.add('active');
+    }
+  } else alt = false;
 }
 
 function nothingHandler() {}
@@ -350,18 +389,26 @@ function handlerAdd(btn) {
     case 'ShiftLeft':
       btn.addEventListener('mousedown', shiftHandler);
       btn.addEventListener('mouseup', shiftHandler);
+      btn.mousedown = shiftHandler;
+      btn.mouseup = shiftHandler;
       break;
     case 'ShiftRight':
       btn.addEventListener('mousedown', shiftHandler);
       btn.addEventListener('mouseup', shiftHandler);
+      btn.mousedown = shiftHandler;
+      btn.mouseup = shiftHandler;
       break;
     case 'AltLeft':
       btn.addEventListener('mousedown', altHandler);
       btn.addEventListener('mouseup', altHandler);
+      btn.mousedown = altHandler;
+      btn.mouseup = altHandler;
       break;
     case 'AltRight':
       btn.addEventListener('mousedown', altHandler);
       btn.addEventListener('mouseup', altHandler);
+      btn.mousedown = altHandler;
+      btn.mouseup = altHandler;
       break;
     case 'ControlLeft':
       btn.addEventListener('click', nothingHandler);
@@ -378,4 +425,34 @@ function handlerAdd(btn) {
   }
 }
 
+function pressHandle(event) {
+  event.preventDefault();
+  const { type, code } = event;
+  if (!CODES.includes(code)) return;
+  const key = document.getElementById(code);
+  switch (type) {
+    case 'keydown':
+      if (mousePressStatesArray.includes(code)) {
+        key.mousedown(event);
+      } else {
+        key.click();
+      }
+      break;
+    case 'keyup':
+      if (mousePressStatesArray.includes(code)) {
+        key.mouseup(event);
+      }
+      break;
+    default:
+      break;
+  }
+  if (type === 'keydown') {
+    key.classList.add('active');
+  } else if (type === 'keyup') {
+    key.classList.remove('active');
+  }
+}
+
 document.addEventListener('DOMContentLoaded', app);
+document.addEventListener('keydown', pressHandle);
+document.addEventListener('keyup', pressHandle);
