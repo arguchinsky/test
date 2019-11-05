@@ -1,3 +1,4 @@
+import data from './_constants';
 // const KEYS = [
 //   [
 //     {
@@ -214,9 +215,7 @@
 // const mousePressStatesArray = ['ShiftLeft', 'ShiftRight', 'AltLeft', 'AltRight'];
 // const defAlphabet = 'abcdefghijklmnopqrstuvwxyz';
 // const altAlphabet = 'абвгдеёжзийклмнопрстуфхцчшщъыьэюя';
-import {
-  KEYS, CODES, mousePressStatesArray, defAlphabet, altAlphabet,
-} from './constants.js';
+
 
 let caps = false;
 let shift = false;
