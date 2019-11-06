@@ -8,6 +8,11 @@
         width: 960px;
         height: auto;
         margin-top: 20px;
+        .textarea {
+            border: 0;
+            box-shadow: $shadow;
+            font-family: 'Supermercado One', cursive;
+        }
         .keyboard{
             @include flex-column();
             width: 100%;

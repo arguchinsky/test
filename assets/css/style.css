@@ -23,6 +23,13 @@
   margin-top: 20px;
 }
 
+.page .wrapper .textarea {
+  border: 0;
+  -webkit-box-shadow: 0px 4px 15px -1px rgba(255, 0, 0, 0.733);
+          box-shadow: 0px 4px 15px -1px rgba(255, 0, 0, 0.733);
+  font-family: 'Supermercado One', cursive;
+}
+
 .page .wrapper .keyboard {
   display: -webkit-box;
   display: -ms-flexbox;
