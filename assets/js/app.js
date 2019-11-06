@@ -7,6 +7,8 @@ const {
 
 let caps = false;
 let shift = false;
+let shiftLeft = false;
+let shiftRight = false;
 let alt = false;
 let lang = JSON.parse(localStorage.getItem('lang')) || false;
 
@@ -16,6 +18,73 @@ const reRenderKeyboard = () => {
   document.querySelector('#keyboard').remove();
   document.querySelector('.wrapper').append(keyboardEl());
 };
+
+const inner = (defVal, shiftVal, altVal, altShiftVal) => {
+  if (lang) {
+    if (shift) {
+      return altShiftVal;
+    } if (caps) {
+      if (altAlphabet.includes(altVal)) return altShiftVal;
+      return altVal;
+    }
+    return altVal;
+  } if (!lang) {
+    if (shift) {
+      return shiftVal;
+    } if (caps) {
+      if (defAlphabet.includes(defVal)) return shiftVal;
+    }
+  }
+  return defVal;
+};
+
+const capslockActive = (btn) => {
+  if (btn.id === 'CapsLock') {
+    if (caps) {
+      btn.classList.add('active');
+    } else {
+      btn.classList.remove('active');
+    }
+  }
+};
+const shiftActive = (btn) => {
+  if (btn.id === 'ShiftLeft') {
+    if (shiftLeft) {
+      btn.classList.add('active');
+    } else {
+      btn.classList.remove('active');
+    }
+  } else if (btn.id === 'ShiftRight') {
+    if (shiftRight) {
+      btn.classList.add('active');
+    } else {
+      btn.classList.remove('active');
+    }
+  }
+};
+
+const checkShift = (code) => {
+  if (code === 'ShiftRight') {
+    shiftRight = true;
+  } else {
+    shiftLeft = true;
+  }
+};
+
+const shiftReset = () => {
+  shift = false;
+  shiftRight = false;
+  shiftLeft = false;
+};
+
+function addBtnFlexGrow(code) {
+  if (code.includes('Shift') || code.includes('Enter')) {
+    return '5';
+  } if (code.includes('Space')) {
+    return '20';
+  }
+  return 2;
+}
 
 function btnClickHandler(event) {
   const area = document.querySelector('#textarea');
@@ -45,28 +114,25 @@ function tabHandler() {
 
 function capsHandler() {
   caps = !caps;
-  if (caps) {
-    reRenderKeyboard();
-    this.classList.add('active');
-  } else {
-    reRenderKeyboard();
-  }
+  reRenderKeyboard();
 }
 
-function shiftHandler({ type }) {
+function shiftHandler({ type, code }) {
   if (type === 'mousedown') {
+    checkShift(code);
     shift = true;
   } else if (type === 'mouseup') {
-    shift = false;
+    shiftReset();
   }
   if (type === 'keydown') {
+    checkShift(code);
     shift = true;
     if (alt) {
       lang = !lang;
       saveLang();
     }
   } else if (type === 'keyup') {
-    shift = false;
+    shiftReset();
   }
   reRenderKeyboard();
 }
@@ -157,33 +223,6 @@ function pressHandle(event) {
   }
 }
 
-function addBtnFlexGrow(code) {
-  if (code.includes('Shift') || code.includes('Enter')) {
-    return '5';
-  } if (code.includes('Space')) {
-    return '20';
-  }
-  return 2;
-}
-
-const inner = (defVal, shiftVal, altVal, altShiftVal) => {
-  if (lang) {
-    if (shift) {
-      return altShiftVal;
-    } if (caps) {
-      if (altAlphabet.includes(altVal)) return altShiftVal;
-      return altVal;
-    }
-    return altVal;
-  } if (!lang) {
-    if (shift) {
-      return shiftVal;
-    } if (caps) {
-      if (defAlphabet.includes(defVal)) return shiftVal;
-    }
-  }
-  return defVal;
-};
 
 const btnCreate = ({
   code, defVal, shiftVal, altVal, altShiftVal,
@@ -203,6 +242,8 @@ const btnCreate = ({
     }
   }
   handlerAdd(btn);
+  capslockActive(btn);
+  shiftActive(btn);
   return btn;
 };
 
