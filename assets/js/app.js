@@ -69,11 +69,6 @@ function shiftHandler({ type }) {
     shift = false;
   }
   reRenderKeyboard();
-  if (shift) {
-    this.classList.add('active');
-  } else {
-    this.classList.remove('active');
-  }
 }
 
 function altHandler({ type }) {
@@ -162,7 +157,7 @@ function pressHandle(event) {
   }
 }
 
-function addBtnGrow(code) {
+function addBtnFlexGrow(code) {
   if (code.includes('Shift') || code.includes('Enter')) {
     return '5';
   } if (code.includes('Space')) {
@@ -171,37 +166,33 @@ function addBtnGrow(code) {
   return 2;
 }
 
+const inner = (defVal, shiftVal, altVal, altShiftVal) => {
+  if (lang) {
+    if (shift) {
+      return altShiftVal;
+    } if (caps) {
+      if (altAlphabet.includes(altVal)) return altShiftVal;
+      return altVal;
+    }
+    return altVal;
+  } if (!lang) {
+    if (shift) {
+      return shiftVal;
+    } if (caps) {
+      if (defAlphabet.includes(defVal)) return shiftVal;
+    }
+  }
+  return defVal;
+};
+
 const btnCreate = ({
   code, defVal, shiftVal, altVal, altShiftVal,
 }) => {
   const btn = document.createElement('div');
   btn.classList.add('btn');
   btn.id = code;
-  if (lang) {
-    btn.innerHTML = altVal;
-    if (shift) {
-      btn.innerHTML = altShiftVal;
-    } else
-    if (caps) {
-      if (altAlphabet.includes(altVal)) btn.innerHTML = altShiftVal;
-      else {
-        btn.innerHTML = altVal;
-      }
-    }
-  } else
-  if (!lang) {
-    if (shift) {
-      btn.innerHTML = shiftVal;
-    } else if (caps) {
-      if (defAlphabet.includes(defVal)) btn.innerHTML = shiftVal;
-      else {
-        btn.innerHTML = defVal;
-      }
-    } else {
-      btn.innerHTML = defVal;
-    }
-  }
-  btn.style.flexGrow = addBtnGrow(code);
+  btn.innerHTML = inner(defVal, shiftVal, altVal, altShiftVal);
+  btn.style.flexGrow = addBtnFlexGrow(code);
   if (mousePressStatesArray.includes(code)) {
     if (code.includes('Shift')) {
       btn.mousedown = shiftHandler;
@@ -211,7 +202,6 @@ const btnCreate = ({
       btn.mouseup = altHandler;
     }
   }
-  // eslint-disable-next-line no-use-before-define
   handlerAdd(btn);
   return btn;
 };
@@ -251,7 +241,6 @@ const wrapperEl = () => {
 const app = () => {
   document.querySelector('#page').prepend(wrapperEl());
 };
-
 
 document.addEventListener('DOMContentLoaded', app);
 document.addEventListener('keydown', pressHandle);
