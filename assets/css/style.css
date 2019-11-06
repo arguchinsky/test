@@ -18,7 +18,7 @@
       -ms-flex-align: center;
           align-items: center;
   margin: 0 auto;
-  width: 80%;
+  width: 960px;
   height: auto;
   margin-top: 20px;
 }
@@ -69,42 +69,41 @@
   -webkit-box-align: center;
       -ms-flex-align: center;
           align-items: center;
-  -webkit-box-flex: 1;
-      -ms-flex: 1 1 50px;
-          flex: 1 1 50px;
+  width: 50px;
   height: 95%;
   margin: 1px;
   background: #fff;
-  color: #940bd3;
-  -webkit-box-shadow: 0px 4px 15px -1px rgba(245, 11, 11, 0.733);
-          box-shadow: 0px 4px 15px -1px rgba(245, 11, 11, 0.733);
+  color: black;
+  -webkit-box-shadow: 0px 4px 15px -1px rgba(255, 0, 0, 0.733);
+          box-shadow: 0px 4px 15px -1px rgba(255, 0, 0, 0.733);
   -webkit-transition: all .3s ease;
   transition: all .3s ease;
+  font-family: 'Supermercado One', cursive;
   font-size: 1.5em;
 }
 
 .page .btn:hover {
   cursor: pointer;
-  -webkit-box-shadow: 0px 4px 15px -1px rgba(224, 224, 224, 0.753);
-          box-shadow: 0px 4px 15px -1px rgba(224, 224, 224, 0.753);
+  -webkit-box-shadow: 0px 4px 15px -1px black;
+          box-shadow: 0px 4px 15px -1px black;
 }
 
 .page .btn:active {
   border-radius: 15px;
-  -webkit-box-shadow: 0px 4px 15px -1px rgba(224, 224, 224, 0.753);
-          box-shadow: 0px 4px 15px -1px rgba(224, 224, 224, 0.753);
-  background: #940bd3;
-  color: #fff;
+  -webkit-box-shadow: 0px 4px 15px -1px rgba(255, 0, 0, 0.733);
+          box-shadow: 0px 4px 15px -1px rgba(255, 0, 0, 0.733);
+  background: black;
+  color: white;
 }
 
 .page .active {
   -webkit-transition: all .3s ease;
   transition: all .3s ease;
   border-radius: 15px;
-  -webkit-box-shadow: 0px 4px 15px -1px rgba(224, 224, 224, 0.753);
-          box-shadow: 0px 4px 15px -1px rgba(224, 224, 224, 0.753);
-  background: #940bd3;
-  color: #fff;
+  -webkit-box-shadow: 0px 4px 15px -1px rgba(255, 0, 0, 0.733);
+          box-shadow: 0px 4px 15px -1px rgba(255, 0, 0, 0.733);
+  background: black;
+  color: white;
 }
 
 .page .prime {

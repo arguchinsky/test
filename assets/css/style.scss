@@ -5,7 +5,7 @@
     .wrapper{
         @include flex-column();
         margin: 0 auto;
-        width: 80%;
+        width: 960px;
         height: auto;
         margin-top: 20px;
         .keyboard{
@@ -22,13 +22,14 @@
     }
     .btn{
         @include flex-column($around);
-        flex: 1 1 50px;
+        width: 50px;
         height: 95%;
         margin: 1px;
         background: #fff;
-        color: rgb(148, 11, 211);
+        color: $font-color;
         box-shadow: $shadow;
         transition: all .3s ease;
+        font-family: 'Supermercado One', cursive;
         font-size: 1.5em;
         &:hover{
             cursor: pointer;
@@ -36,17 +37,17 @@
         }
         &:active{
             border-radius: 15px;
-            box-shadow: $shadow-hover;
-            background: rgb(148, 11, 211);
-            color: #fff;
+            box-shadow: $shadow;
+            background: rgb(0, 0, 0);
+            color: $font-color-active;
         }
     }
     .active{
         transition: all .3s ease;
         border-radius: 15px;
-        box-shadow: $shadow-hover;
-        background: rgb(148, 11, 211);
-        color: #fff;
+        box-shadow: $shadow;
+        background: rgb(0, 0, 0);
+        color: $font-color-active;
     }
     .prime{
         font-size: 1.3rem;
