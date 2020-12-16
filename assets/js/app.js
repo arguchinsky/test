@@ -1,6 +1,7 @@
 /* eslint-disable no-use-before-define */
 import data from './_constants';
 
+//ditructure
 const {
   KEYS, CODES, mousePressStatesArray, defAlphabet, altAlphabet,
 } = data;
